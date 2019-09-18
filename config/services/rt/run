@@ -1,0 +1,17 @@
+#!/bin/sh
+exec 2>&1
+
+set -e
+
+mkdir -p /data/gpg
+chmod 700 /data/gpg
+chown -R nginx: /data
+
+exec /usr/bin/spawn-fcgi \
+  -n \
+  -s /var/run/rt-server.sock \
+  -u nginx \
+  -U nginx \
+  -G nginx \
+  -M 0700 \
+  -- /opt/rt4/sbin/rt-server.fcgi
