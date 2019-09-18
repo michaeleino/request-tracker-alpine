@@ -16,9 +16,9 @@ and will connect by default to MySQL database.
 
 -Start a Mysql/Mariadb container:
  if you have an existing running DB, skip this step and go down for RT4
- for ref: https://hub.docker.com/_/mariadb/
+ for ref: `https://hub.docker.com/_/mariadb/`
 
-  $ docker run \
+  ```$ docker run \
     --name some-mariadb \
     --hostname myhostname \
     -p 3306:3306
@@ -27,11 +27,11 @@ and will connect by default to MySQL database.
     -d mariadb:tag \
     --character-set-server=utf8mb4 \
     --collation-server=utf8mb4_unicode_ci
-
+```
 
 -Now the database is running and you can run RT using:
 
-  $ docker run -d \
+  ```$ docker run -d \
     --name rt \
     --hostname rt.example.com
     -p 443 \
@@ -42,13 +42,13 @@ and will connect by default to MySQL database.
     -e DATABASE_PASS=rt_pass \
     -e DATABASE_NAME=rt4 \
     arpuplus/rt4:4.4.4-1
-
+```
 To check the ports on which the web interfaces are exposed, run `docker ps`.
 
 You can now initialize the database by going to the web interface of RT4 container IP:port.
 
-But preferably go to bash and initialize the DB from there as below:
- `rt-setup-database --action init`
+But preferably go to bash and initialize the DB from there by:
+ ```rt-setup-database --action init```
 
 
 configuration
@@ -58,6 +58,7 @@ environment variables. See RT_SiteConfig.pm for details.
 
 Available vars:
 ---------------
+```
 RT_NAME                 defaults to example.com
 Organisation            defaults to example.com
 WEB_DOMAIN              defaults to example
@@ -69,17 +70,17 @@ DATABASE_PORT           defaults to MySQL 3306
 DATABASE_NAME           defaults to rt4
 DATABASE_USER           defaults to rt_user
 DATABASE_PASSWORD       defaults to rt_user
-
+```
 
 Extensions:
 ===========
 The image is built with mergeusers and CommandByMail extensions and enabled in the conf.
-  https://github.com/bestpractical/rt-extension-mergeusers
-  https://github.com/bestpractical/rt-extension-commandbymail
+```  https://github.com/bestpractical/rt-extension-mergeusers
+  https://github.com/bestpractical/rt-extension-commandbymail```
 
 Extra Extensions:
 =================
 To install an extension, go to the container cli by
-  `$ docker exec -it CONTAINER-NAME ash`
+  ```$ docker exec -it CONTAINER-NAME ash```
 then run the below, and substitue the URL of the extension needed:
-  `/src/installext.sh "https://github.com/bestpractical/rt-extension-EXTNAME" `
+  ```/src/installext.sh "https://github.com/bestpractical/rt-extension-EXTNAME"```
