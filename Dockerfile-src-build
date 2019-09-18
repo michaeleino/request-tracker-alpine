@@ -1,0 +1,188 @@
+FROM alpine:3.10
+# ref https://github.com/jfcanaveral/docker-rt/blob/master/Dockerfile
+LABEL maintainer="Michael Fayez <smsconnectivity@arpuplus.com>"
+
+# Disable SSH
+# RUN rm -rf /etc/service/sshd /etc/my_init.d/00_regen_ssh_host_keys.sh
+
+# Set up APK
+RUN apk update && apk upgrade && \
+  # Install required packages
+  apk add \
+  bash \
+  nginx \
+  perl-app-cpanminus \
+  curl \
+  gcc \
+  gnupg \
+  perl-business-hours \
+  libc-dev \
+  perl-cgi-psgi \
+  perl-cgi-emulate-psgi \
+  perl-convert-color \
+  perl-crypt-eksblowfish \
+  perl-crypt-ssleay \
+  perl-css-minifier-xs \
+  perl-css-squish \
+  perl-data-guid \
+  perl-data-ical \
+  perl-data-page-pageset \
+  perl-data-page \
+  perl-date-extract \
+  perl-date-manip \
+  perl-datetime-format-natural \
+  perl-dbix-searchbuilder \
+  perl-devel-globaldestruction \
+  perl-email-address-list \
+  perl-email-address \
+  perl-encode \
+  perl-fcgi \
+  perl-fcgi-procmanager \
+  perl-file-sharedir-install \
+  perl-file-sharedir \
+  perl-gdgraph \
+  perl-gdtextutil \
+  perl-graphviz \
+  perl-html-formattext-withlinks-andtables \
+  perl-html-formattext-withlinks \
+  perl-html-mason \
+  perl-html-mason-psgihandler \
+  perl-html-quoted \
+  perl-html-rewriteattributes \
+  perl-html-scrubber \
+  perl-ipc-run3 \
+  perl-ipc-signal \
+  perl-javascript-minifier-xs \
+  perl-json \
+  perl-locale-maketext-fuzzy \
+  perl-locale-maketext-lexicon \
+  perl-log-dispatch \
+  perl-mailtools \
+  perl-mime-tools \
+  perl-mime-types \
+  perl-module-refresh \
+  perl-module-versions-report \
+  perl-net-cidr \
+  perl-net-ip \
+  perl-plack \
+  perl-regexp-common-net-cidr \
+  perl-regexp-common \
+  perl-regexp-ipv6 \
+  perl-role-basic \
+  perl-scope-upper \
+  perl-server-starter \
+  perl-symbol-global-name \
+  perl-term-readkey \
+  perl-text-password-pronounceable \
+  perl-text-quoted \
+  perl-text-template \
+  perl-text-wikiformat \
+  perl-text-wrapper \
+  perl-time-modules \
+  perl-tree-simple \
+  perl-universal-require \
+  perl-xml-rss \
+  perl-moox-types-mooselike \
+  make \
+  mariadb-dev \
+  mariadb-client \
+  mariadb-connector-c-dev \
+  perl-module-install \
+  gd-dev \
+  gd \
+  pcre2 \
+  git \
+  libxau \
+  libbsd \
+  libxdmcp \
+  libxcb \
+  libx11 \
+  libxext \
+  libxrender \
+  fontconfig \
+  pixman \
+  cairo \
+  libltdl \
+  libxft \
+  fribidi \
+  graphite2 \
+  harfbuzz \
+  pango \
+  graphviz \
+  libpq \
+  perl-git \
+  git-perl \
+  perl-convert-asn1 \
+  perl-ldap \
+  perl-net-ssleay \
+  perl-perlio-utf8_strict \
+  perl-signal-mask \
+  perl-class-accessor-lite \
+  perl-parallel-prefork \
+  perl-starlet \
+  perl-super \
+  perl-utils \
+  perl-moo \
+  perl-module-build-tiny \
+  perl-apache-session \
+  perl-lwp-protocol-https \
+  perl-io-socket-ssl \
+  perl-test-requiresinternet \
+  perl-dbd-mysql \
+  perl-moose \
+  perl-dev \
+  runit \
+  spawn-fcgi
+
+# Set up environment vars
+ENV PERL_MM_USE_DEFAULT 1
+ENV HOME /root
+ENV RT rt-4.4.4
+ENV RTSRC ${RT}.tar.gz
+
+# Autoconfigure cpan
+RUN echo q | /usr/bin/perl -MCPAN -e shell
+
+# Install RT perl dep
+RUN cpan -f Capture::Tiny GnuPG::Interface && \
+    cpanm --no-wget PerlIO::eol Module::Signature Mozilla::CA  ExtUtils::MakeMaker  Module::Install::RTx  Module::Install::Substitute --force
+
+RUN  mkdir /src && \
+  wget http://download.bestpractical.com/pub/rt/release/${RTSRC} -O /src/${RTSRC} && \
+  tar -C /src -xzpvf /src/${RTSRC} && \
+  ln -s /src/${RT} /src/rt && \
+  cd /src/${RT} && ./configure --with-db-type=mysql --enable-externalauth --enable-gpg --enable-gd --enable-graphviz && \
+# cpanm --no-wget install Apache::LogFormat::Compiler Cookie::Baker HTTP::Entity::Parser HTTP::Headers::Fast Parallel::Prefork LWP::UserAgent --force
+  make -C /src/${RT} fixdeps && \
+  make -C /src/${RT} install
+# clean cache to save some space
+#  apk cache --purge
+
+# Add system service config
+ADD ./config/ /src/config/
+RUN mv /src/config/nginx.conf /etc/nginx/nginx.conf && \
+    mv /src/config/scripts/rtcron /usr/bin/rtcron && \
+    mv /src/config/scripts/rtinit /usr/bin/rtinit && \
+    cat /src/config/crontab.root >> /var/spool/cron/crontabs/root && \
+# Build RT and extensions
+    mv /src/config/scripts/installext.sh /src/installext.sh && \
+    /src/installext.sh "https://github.com/bestpractical/rt-extension-mergeusers" && \
+    /src/installext.sh "https://github.com/bestpractical/rt-extension-commandbymail" && \
+
+    mkdir -p /opt/rt4/local/html/Callbacks/MyCallbacks/Elements/MakeClicky && \
+    mv /src/config/scripts/MakeClicky /opt/rt4/local/html/Callbacks/MyCallbacks/Elements/MakeClicky/Default && \
+    \
+# Configure RT
+    mv /src/config/RT_SiteConfig.pm /opt/rt4/etc/RT_SiteConfig.pm && \
+    mv /opt/rt4/var /data && \
+    ln -s /data /opt/rt4/var && \
+  \
+# Add system services
+    mkdir /var/log/rt4 && \
+    mv /src/config/services /etc/service
+CMD ["/sbin/my_init"]
+
+VOLUME ["/data"]
+EXPOSE 25
+EXPOSE 80
+EXPOSE 443

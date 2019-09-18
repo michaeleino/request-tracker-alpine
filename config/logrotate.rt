@@ -1,0 +1,6 @@
+/var/log/rt4/*.log {
+        weekly
+        rotate 12
+        compress
+        missingok
+}
