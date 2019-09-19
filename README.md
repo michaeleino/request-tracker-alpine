@@ -1,12 +1,12 @@
 # request-tracker-alpine
 request tracker alpine
 
---RT 4.4.4
---supervisor
---nginx
---spawn-fcgi
---msmtp
---getmail
+-RT 4.4.4
+-supervisor
+-nginx
+-spawn-fcgi
+-msmtp
+-getmail
 
 
 # docker-rt4 on Linux Alpine
@@ -93,4 +93,5 @@ Extra Extensions:
 To install an extension, go to the container cli by
   ```$ docker exec -it CONTAINER-NAME ash```
 then run the below, and substitue the URL of the extension needed:
+
   `rt-install-ext.sh "https://github.com/bestpractical/rt-extension-EXTNAME"`
