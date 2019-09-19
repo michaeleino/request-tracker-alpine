@@ -1,9 +1,16 @@
 # request-tracker-alpine
 request tracker alpine
 
+--RT 4.4.4
+--supervisor
+--nginx
+--spawn-fcgi
+--msmtp
+--getmail
 
-#docker-rt4 on Linux Alpine
-===========================
+
+# docker-rt4 on Linux Alpine
+ ===========================
 
 This is a docker image for running Best Practical's RT V4.x (Request Tracker), a ticket tracking system.
 
@@ -11,10 +18,10 @@ the image will exposes the RT web interface on container port 80 and 443.
 and will connect by default to MySQL database.
 
 
-#Getting Starting
------------------
+# Getting Starting
+ -----------------
 
--Start a Mysql/Mariadb container:
+-- Start a Mysql/Mariadb container:
  if you have an existing running DB, skip this step and go down for RT4
  for ref: `https://hub.docker.com/_/mariadb/`
 
@@ -29,9 +36,9 @@ and will connect by default to MySQL database.
     --collation-server=utf8mb4_unicode_ci
 ```
 
--Now the database is running and you can run RT using:
+-- Now the database is running and you can run RT using:
 
-  ```$ docker run -d \
+``` $ docker run -d \
     --name rt \
     --hostname rt.example.com
     -p 443 \
@@ -41,14 +48,14 @@ and will connect by default to MySQL database.
     -e DATABASE_USER=rt_user \
     -e DATABASE_PASS=rt_pass \
     -e DATABASE_NAME=rt4 \
-    arpuplus/rt4:4.4.4-1
+    arpuplus/rt4:4.4.4-2
 ```
 To check the ports on which the web interfaces are exposed, run `docker ps`.
 
 You can now initialize the database by going to the web interface of RT4 container IP:port.
 
 But preferably go to bash and initialize the DB from there by:
- ```rt-setup-database --action init```
+ `rt-setup-database --action init`
 
 
 configuration
@@ -75,12 +82,15 @@ DATABASE_PASSWORD       defaults to rt_user
 Extensions:
 ===========
 The image is built with mergeusers and CommandByMail extensions and enabled in the conf.
-```  https://github.com/bestpractical/rt-extension-mergeusers
-  https://github.com/bestpractical/rt-extension-commandbymail```
+
+```
+     https://github.com/bestpractical/rt-extension-mergeusers
+     https://github.com/bestpractical/rt-extension-commandbymail
+```
 
 Extra Extensions:
 =================
 To install an extension, go to the container cli by
   ```$ docker exec -it CONTAINER-NAME ash```
 then run the below, and substitue the URL of the extension needed:
-  ```/src/installext.sh "https://github.com/bestpractical/rt-extension-EXTNAME"```
+  `rt-install-ext.sh "https://github.com/bestpractical/rt-extension-EXTNAME"`
