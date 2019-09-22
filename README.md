@@ -9,8 +9,8 @@ request tracker alpine
 -getmail
 
 
-# docker-rt4 on Linux Alpine
- ===========================
+# RT on Linux Alpine
+ ===================
 
 This is a docker image for running Best Practical's RT V4.x (Request Tracker), a ticket tracking system.
 

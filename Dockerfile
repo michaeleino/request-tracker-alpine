@@ -38,4 +38,4 @@ VOLUME ["/var/log/"]
 EXPOSE 80
 EXPOSE 443
 # CMD ["rt-server"]
-CMD ["/usr/bin/supervisord", "-n", "-c", "/etc/supervisord.conf"]
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
