@@ -24,6 +24,7 @@ RUN \
     mkdir /src/getmail && tar xzvf /src/getmail.tar.gz --strip-components=1 --directory /src/getmail && \
     cd /src/getmail && \
     python setup.py install && \
+    mkdir /var/spool/getmail && \
 ##adding supervisord conf files
     mkdir /run/nginx/  && \
     mv /src/config/supervisor.d /etc/ && \
