@@ -1,16 +1,16 @@
 # request-tracker-alpine
 request tracker alpine
 
--RT 4.4.4
--supervisor
--nginx
--spawn-fcgi
--msmtp
--getmail
+-RT 4.4.4  
+-supervisor  
+-nginx  
+-spawn-fcgi  
+-msmtp  
+-getmail  
 
 
-# RT on Linux Alpine
- ===================
+#### RT on Linux Alpine
+ ====================
 
 This is a docker image for running Best Practical's RT V4.x (Request Tracker), a ticket tracking system.
 
@@ -21,9 +21,9 @@ and will connect by default to MySQL database.
 # Getting Starting
  -----------------
 
--- Start a Mysql/Mariadb container:
- if you have an existing running DB, skip this step and go down for RT4
- for ref: `https://hub.docker.com/_/mariadb/`
+- Start a Mysql/Mariadb container:  
+ if you have an existing running DB, skip this step and go down for RT4:  
+  for ref: `https://hub.docker.com/_/mariadb/`
 
   ```$ docker run \
     --name some-mariadb \
@@ -36,32 +36,38 @@ and will connect by default to MySQL database.
     --collation-server=utf8mb4_unicode_ci
 ```
 
--- Now the database is running and you can run RT using:
+- Now the database is running and you can run RT using:  
+  `/etc/rt4-docker/` is where you decide to store RT data, log and external configuration.
 
-``` $ docker run -d \
-    --name rt \
-    --hostname rt.example.com
-    -p 443 \
-    -p 80 \
-    -v /my/host/data/dir:/etc/rt4/RT_SiteConfig.d \
-    -e DATABASE_HOST=dbserver \
-    -e DATABASE_USER=rt_user \
-    -e DATABASE_PASS=rt_pass \
-    -e DATABASE_NAME=rt4 \
-    arpuplus/rt4:4.4.4-2
+```
+    $ docker run -d \
+      --name rt4 \
+      --hostname ticketing.arpuplus.com \
+      --restart unless-stopped \
+      -p 443:443 -p 80:80 \
+      -v /etc/rt4-docker/RT_SiteConfig.d:/etc/rt4/RT_SiteConfig.d \
+      -v /etc/rt4-docker/scripts:/etc/rt4/scripts \
+      -v /etc/rt4-docker/log:/var/log \
+      -v /etc/rt4-docker/rt4-cron:/etc/crontabs/nginx \
+      -e DATABASE_HOST=DBHOST \
+      -e DATABASE_USER=rt_user \
+      -e DATABASE_PASSWORD=rt_pass \
+      -e DATABASE_NAME=rt4 \
+      arpuplus/rt4:4.4.4.05
 ```
 To check the ports on which the web interfaces are exposed, run `docker ps`.
 
 You can now initialize the database by going to the web interface of RT4 container IP:port.
 
-But preferably go to bash and initialize the DB from there by:
+But preferably go to ash shell and initialize the DB from there by:  
  `rt-setup-database --action init`
 
 
 configuration
 -------------
-This image provides some limited support for customising the deployment using
-environment variables. See RT_SiteConfig.pm for details.
+This image provides some limited support for customizing the deployment using
+environment variables. See RT_SiteConfig.pm for details, and most probably you will need to map an external directory from host to the container like:  
+    `-v /etc/rt4-docker/RT_SiteConfig.d:/etc/rt4/RT_SiteConfig.d`
 
 Available vars:
 ---------------
@@ -76,22 +82,21 @@ DATABASE_HOST
 DATABASE_PORT           defaults to MySQL 3306
 DATABASE_NAME           defaults to rt4
 DATABASE_USER           defaults to rt_user
-DATABASE_PASSWORD       defaults to rt_user
+DATABASE_PASSWORD       defaults to rt_pass
 ```
 
 Extensions:
-===========
+-----------
 The image is built with mergeusers and CommandByMail extensions and enabled in the conf.
 
 ```
-     https://github.com/bestpractical/rt-extension-mergeusers
-     https://github.com/bestpractical/rt-extension-commandbymail
+  -   https://github.com/bestpractical/rt-extension-mergeusers  
+  -   https://github.com/bestpractical/rt-extension-commandbymail
 ```
 
 Extra Extensions:
 =================
-To install an extension, go to the container cli by
+To install an extension, go to the container cli by  
   ```$ docker exec -it CONTAINER-NAME ash```
-then run the below, and substitue the URL of the extension needed:
-
+then run the below, and substitue the URL of the extension needed:  
   `rt-install-ext.sh "https://github.com/bestpractical/rt-extension-EXTNAME"`

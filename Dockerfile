@@ -25,6 +25,7 @@ RUN \
     cd /src/getmail && \
     python setup.py install && \
     mkdir /var/spool/getmail && \
+    chown -R nginx:www-data /var/spool/getmail && \
 ##adding supervisord conf files
     mkdir /run/nginx/  && \
     mv /src/config/supervisor.d /etc/ && \
