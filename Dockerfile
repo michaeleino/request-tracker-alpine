@@ -10,7 +10,8 @@ ADD ./config/ /src/config/
 RUN apk update && apk upgrade && \
   # Install required packages
   apk add rt4 git make perl-module-install perl-graphviz perl-gd msmtp \
-          spawn-fcgi nginx supervisor
+          spawn-fcgi nginx supervisor \
+          postfix cyrus-sasl-login
 # clean cache to save some space
   # apk cache --purge --progress
 RUN \
@@ -31,6 +32,9 @@ RUN \
     mv /src/config/supervisor.d /etc/ && \
 ##adding nginx conf
     mv /src/config/nginx.conf /etc/nginx/nginx.conf && \
+##postfix configs
+  cp /etc/postfix/main.cf /etc/postfix/main.cf.dist && \
+  mv /src/config/scripts/postconf.sh /usr/bin/ && \
 #clean things for space
     apk del make && \
     rm -r /src/

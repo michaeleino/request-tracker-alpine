@@ -1,0 +1,14 @@
+relayhost = [smtp.office365.com]:587
+smtp_sasl_auth_enable = yes
+smtp_sasl_password_maps = hash:/etc/postfix/sasl_passwd
+smtp_tls_security_level = encrypt
+smtp_use_tls = yes
+smtp_generic_maps = hash:/etc/postfix/generic
+
+smtp_sasl_security_options = noanonymous, noplaintext
+smtp_sasl_tls_security_options = noanonymous
+
+sender_canonical_maps = regexp:/etc/postfix/sender_canonical
+
+maillog_file = /var/log/postfix.log
+smtpd_tls_loglevel = 1
