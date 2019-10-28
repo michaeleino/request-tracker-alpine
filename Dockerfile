@@ -20,6 +20,10 @@ RUN \
     mv /src/config/scripts/rt-install-ext.sh /usr/bin/ && \
     rt-install-ext.sh "https://github.com/bestpractical/rt-extension-mergeusers" && \
     rt-install-ext.sh "https://github.com/bestpractical/rt-extension-commandbymail" && \
+    # set X-Managed-by
+    orgnmngdby='"RT $RT::VERSION (http:\/\/www.bestpractical.com\/rt\/)"' && \
+    newmngdby="RT->Config->Get('Organization')" && \
+    sed -i -e "s/$orgnmngdby/$newmngdby/g" /usr/lib/rt4/RT/Action/SendEmail.pm && \
 # install getmail manually till it become available at repo
     wget http://pyropus.ca/software/getmail/old-versions/getmail-5.14.tar.gz -O /src/getmail.tar.gz && \
     mkdir /src/getmail && tar xzvf /src/getmail.tar.gz --strip-components=1 --directory /src/getmail && \
@@ -35,7 +39,7 @@ RUN \
 ##postfix configs
   cp /etc/postfix/main.cf /etc/postfix/main.cf.dist && \
   mv /src/config/scripts/postconf.sh /usr/bin/ && \
-#clean things for space
+#clean things for space saving
     apk del make && \
     rm -r /src/
 
