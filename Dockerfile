@@ -12,7 +12,7 @@ ADD ./config/ /src/config/
 # Set up APK
 RUN apk update && apk upgrade && \
   # Install required packages
-  apk add rt4 git make perl-module-install perl-graphviz perl-gd msmtp \
+  apk add rt4 git make perl-module-install perl-graphviz perl-gd perl-gdgraph perl-gdtextutil \
           spawn-fcgi nginx supervisor \
           postfix cyrus-sasl-login
 # clean cache to save some space
@@ -35,7 +35,7 @@ RUN \
   unzip ckeditor_${CKEVERSION}_full.zip && rm ckeditor_${CKEVERSION}_full.zip && \
   mv /usr/share/rt4/static/RichText /usr/share/rt4/static/RichText.orgn && \
   mv ckeditor /usr/share/rt4/static/RichText && \
-  ## removing the background-color to match the original red/yellow for reply/comment
+  ## removing the background-color to match the original red/yellow for reply/comment in the ckeditor
   sed -i 's/background-color: #fff;//g' /usr/share/rt4/static/RichText/contents.css && \
 # install getmail manually till it become available at repo
     wget http://pyropus.ca/software/getmail/old-versions/getmail-${GETMAILVERSION}.tar.gz -O /src/getmail.tar.gz && \
