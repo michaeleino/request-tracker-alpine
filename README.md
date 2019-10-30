@@ -85,6 +85,14 @@ DATABASE_USER           defaults to rt_user
 DATABASE_PASSWORD       defaults to rt_pass
 ```
 
+- The image has an hourly cronjob for full text index  
+```rt-fulltext-indexer -> /usr/sbin/rt-fulltext-indexer```
+
+You need to start the indexer setup once after the first installation, selecting your DB type and table name, then add the configuration from the output to your RT_SiteConfig.pm  
+
+```/usr/sbin/rt-setup-fulltext-index --dba rt_user --dba-password rt_pass```  
+
+
 Extensions:
 -----------
 The image is built with mergeusers and CommandByMail extensions and enabled in the conf.

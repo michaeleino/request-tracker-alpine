@@ -29,6 +29,8 @@ RUN \
     orgnmngdby='"RT $RT::VERSION (http:\/\/www.bestpractical.com\/rt\/)"' && \
     newmngdby="RT->Config->Get('Organization')" && \
     sed -i -e "s/$orgnmngdby/$newmngdby/g" /usr/lib/rt4/RT/Action/SendEmail.pm && \
+    # add hourly cronjob for full text index
+    ln -s /usr/sbin/rt-fulltext-indexer /etc/periodic/hourly/ && \
   # add the full lastet ckeditor
   cd /src/ && \
   wget "https://download.cksource.com/CKEditor/CKEditor/CKEditor%20${CKEVERSION}/ckeditor_${CKEVERSION}_full.zip" && \
