@@ -33,6 +33,7 @@ RUN \
     ln -s /usr/sbin/rt-fulltext-indexer /etc/periodic/hourly/ && \
   # add the full lastet ckeditor
   cd /src/ && \
+  #downloading the ckeditor
   wget "https://download.cksource.com/CKEditor/CKEditor/CKEditor%20${CKEVERSION}/ckeditor_${CKEVERSION}_full.zip" && \
   unzip ckeditor_${CKEVERSION}_full.zip && rm ckeditor_${CKEVERSION}_full.zip && \
   # taking the original editor in a .orgn dir
