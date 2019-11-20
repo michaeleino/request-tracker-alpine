@@ -35,7 +35,9 @@ RUN \
   cd /src/ && \
   wget "https://download.cksource.com/CKEditor/CKEditor/CKEditor%20${CKEVERSION}/ckeditor_${CKEVERSION}_full.zip" && \
   unzip ckeditor_${CKEVERSION}_full.zip && rm ckeditor_${CKEVERSION}_full.zip && \
+  # taking the original editor in a .orgn dir
   mv /usr/share/rt4/static/RichText /usr/share/rt4/static/RichText.orgn && \
+  # install the newly downloaded editor to RT location
   mv ckeditor /usr/share/rt4/static/RichText && \
   ## removing the background-color to match the original red/yellow for reply/comment in the ckeditor
   sed -i 's/background-color: #fff;//g' /usr/share/rt4/static/RichText/contents.css && \
